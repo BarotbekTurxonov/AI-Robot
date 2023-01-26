@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-size: 20px;
+      font-family: 'Cardo', serif;
+      background-color: #484d5c;
+      color: rgb(255 206 0);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div>
+    Prompt Generator for OpenAI's DALL-E 2 (beta)
+
+    <p style="font-size:80%;">The owners/creators of this software product are not affiliated with OpenAI.  This software is open source (<a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>).</p>
+  </div>
+
+  <div>
+    <button id="go-button">Generate Prompts</button>
+
+    <p id="demo-0"></p>
+    <p id="demo-1"></p>
+    <p id="demo-2"></p>
+    <p id="demo-3"></p>
+    <p id="demo-4"></p>
+    <p id="demo-5"></p>
+    <p id="demo-6"></p>
+    <p id="demo-7"></p>
+    <p id="demo-8"></p>
+    <p id="demo-9"></p>
+  </div>
+
+
+
+  <script>
+
+    document.getElementById("go-button").onclick = function () {
+      go();
+    };
+
+    // This gets called once per generation.
+    function go() {
+      let template = "#content#, #img-type##img-mod#";
+      for (var i = 0; i < 10; i++) {
+        setContent("demo-" + i, capitalizeFirstLetter(resolve(template)));
+      }
+    }
+    // This gets called once for each prompt generated.
+    function resolve(template) {
+      var ret = template;
+      var arr = template.match(/(#[a-z\-]*#)/gi);// arr is an array of all params in the template.
+      for (var item in arr) {
+        var options = getArrayByParam(arr[item]);
+        var input = resolve(getRandoFromArray(options)); // Recursive call to resolve embedded templates.
+        // replace the param in the template.
+        ret = ret.replace(arr[item], input);
+      }
+      return ret;
+    }
+    function setContent(container, result) {
+      document.getElementById(container).innerHTML = result;
+    }
+    function getRandoFromArray(arr) {
+      var item = arr[Math.floor(Math.random() * arr.length)];
+      return item;
+    }
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    function getArrayByParam(param) {
+      //console.log(param);
+      switch (param) {
+        case "#content#":
+          return ["#humanoid# #human-mod# in #setting#", "#humanoid# #human-mod# in #setting#", "#holdable# #obj-mod# in #setting#"];
+        case "#img-type#":
+          return ["Realistic photograph", "Realistic painting", "Painting by #painter#", "Painting by #painter#", "Painting by #painter#", "Painting by #painter#", "Painting by #painter#",
+            "Selfie", "Pixel Art", "Portrait", "Cover of #magazine# magazine", "Cover of #magazine# magazine", "Cover of #magazine# magazine", "On the television show #show#",
+            "On the television show #show#", "On the television show #show#", "In the movie #movie#", "In the movie #movie#", "In the movie #movie#", "Detailed scientific diagram", "Movie Poster",
+            "Victorian Newspaper article", "Cinematic shot", "Digital art", "35mm photograph", "Baroque painting", "Advertisement", "Comic-style art", "Book cover", "Early 1900s newspaper",
+            "Renaissance painting", "Sculpture", "Grafitti art", "Crayon art by 5 year old", "watercolors by 5 year old", "1960s Cartoon", "Cyberpunk digital art", "Go pro footage",
+            "Oil painting", "Sketch", "Neoclassical painting"];
+        case "#img-mod#":
+          return [", Hyperrealistic", ", Closeup", ", Award winning", ", Vintage", ", 4K HD", ", Highly Detailed", "", "", "", "", "", "", "", "", "", "", ""];
+        case "#food#":
+          return ["a bowl of cereal", "hot wings", "cake", "pizza", "a hamburger", "french fries", "a plate of nachos", "onion rings", "pudding", "#veggie#", "#veggie#", "#veggie#",
+            "#veggie#", "#fruit#", "#fruit#", "#fruit#", "#fruit#", "#fruit#", "#fruit#"];
+        case "#color#":
+          return ["red", "orange", "yellow", "green", "blue", "purple", "silver", "black", "brown", "white", "grey", "gold", "teal", "magenta", "indigo"];
+        case "#setting#":
+          return ["the pouring rain", "a space station on Mars", "a desert", "a plain", "a tundra", "a wetland", "a mountainside scene", "a beach scene", "a rock concert",
+            "a bustling modern city", "an alley", "a boat on a river", "a forest", "a jungle", "a winter wonderland", "Ancient Egypt", "Ancient Rome", "a zoo", "a McDonalds's", "space",
+            "a museum", "a bus stop", "a school", "a cafeteria", "a concert hall", "a playground", "a bathroom", "minecraft", "a subway", "a submarine", "a haunted house", "a cave", "a swimming pool",
+            "a restaurant", "a bar", "a prison cell", "the back of a bus", "a tree", "a car", "an alien spaceship", "a medieval castle", "a bungalow on the beach", "heaven", "an academy", "a farm",
+            "an airport", "a beauty salon", "a basement", "a casino", "a circus", "a church", "a bookstore", "a barber shop", "a sewer", "a garden", "a football stadium", "a hospital",
+            "a police station", "a zen garden", "a volcano", "Easter Island", "a winery", "a temple", "a small town", "a train station", "a secret hideaway"];
+        case "#humanoid#":
+          return ["a robot", "a gorilla", "#profession#", "an elf", "a hobbit", "a sloth", "an alien", "Winnie the Pooh", "Darth Vader", "Cthulhu", "A giant squid", "SpongeBob SquarePants",
+            "Gandalf the Grey", "a goblin", "Batman", "Cleopatra", "Superman", "Harry Potter", "Homer Simpson", "Mickey Mouse", "Princess Jasmine", "Garfield", "Marge Simpson",
+            "Fred Flintstone", "Super Mario", "Luigi from Super Mario", "Tony the Tiger", "Snow White", "an Imperial Stormtrooper", "Boba Fett"];
+        case "#human-mod#":
+          return ["with #color# hair eating #food#", "dressed as #profession# holding #holdable#", "with #color# hair holding #holdable#", "dressed as #profession# riding #rideable#",
+            "holding #holdable#", "holding #holdable# and eating #food#", "driving #driveable#", "eating #food#", "riding #rideable#", "with #color# hair planting #plantable#",
+            "holding #holdable# planting #plantable#", "dressed as #profession# planting #plantable#", "sleeping", "dancing with #humanoid#", "talking to #humanoid#", "falling asleep",
+            "wearing #wearable# driving #driveable#", "wearing #wearable# holding #holdable#", "wearing #wearable# drinking #drinkable#", "dressed as #profession# drinking #drinkable#",
+            "wearing #wearable# with #color# hair", "learning to fly", "playing #playable#", "playing #playable# while eating #food#", "wearing #wearable# playing #playable#",
+            "playing #playable# and losing", "playing #playable# and winning", "talking to #critter#"];
+        case "#critter#":
+          return ["a mouse", "a bird", "a squirrel", "a cat", "a fish", "a tiny horse", "a huge bumblebee", "a sloth", "a hamster", "a lizard", "a spider", "a scorpion", "a beetle", "a centipede",
+          "a pokemon", "a pikachu", "a squirtle"];
+        case "#driveable#":
+          return ["a school bus", "a car", "a truck", "a motorcycle", "a lawnmower", "a garbage truck", "a snowmobile", "a lamborghini", "a tesla", "a motor scooter", "a cadillac",
+            "a forklift", "a clown car", "a dump truck"];
+        case "#rideable#":
+          return ["a bicycle", "a horse", "#humanoid#", "#humanoid#", "#critter#", "#critter#", "#critter#", "a hang glider", "a boat", "an osterich", "a dolphin", "a pterodactyl",
+            "a velociraptor", "a train", "a goat", "a giraffe", "a camel", "a donkey", "a lawnmower"];
+        case "#profession#":
+          return ["a doctor", "a scientist", "the pope", "an astronaut", "a medieval knight", "a lawyer", "a CEO", "a samurai", "a paramedic", "a construction worker", "a shaman",
+            "a firefighter", "a mailman", "an electrician", "a chef", "a merchanic", "a pharmacist", "a fortune teller", "an engineer", "a butcher", "a policeman"];
+        case "#painter#":
+          return ["Vincent van Gogh", "Leonardo Da Vinci", "Rembrandt", "Pablo Picasso", "Andy Warhol", "Gustav Klimt", "Salvador Dali", "Claude Monet", "H.R. Giger"];
+        case "#magazine#":
+          return ["Time", "Vogue", "GQ", "National Geographic", "Rolling Stone", "MAD", "Cosmopolitan"];
+        case "#show#":
+          return ["Simpsons", "Sopranos", "Baywatch", "Southpark", "The X Files", "Seinfeld", "The Office", "Law & Order", "The Brady Bunch", "Friends",
+            "The Fresh Prince of Bel-Air", "Sesame Street"];
+        case "#movie#":
+          return ["The Godfather", "Indiana Jones", "Saving Private Ryan", "Lord of the Rings", "Star Wars", "Terminator", "The Wizard of Oz", "Jurassic Park", "Gone with the Wind", "Rocky"];
+        case "#holdable#":
+          return ["a cigarette", "a bag of marbles", "a candybar", "a crystal ball", "#plantable#", "#plantable#", "a fork", "a knife", "a pencil", "a boombox", "a wedding ring",
+            "a camera", "a phone", "a compass", "#food#", "#food#", "#food#", "#food#", "#food#", "#food#", "#critter#", "#critter#", "#critter#", "#critter#", "#drinkable#",
+            "#drinkable#", "#drinkable#", "#drinkable# and #food#", "#drinkable# and #food#", "#wearable# and #wearable#", "#wearable#", "#wearable#", "#wearable#"];
+        case "#obj-mod#":
+          return ["covered in #material#", "sitting on top of #holdable#", "sitting on top of #holdable#", "melting into a puddle", "standing upright", "giving off light", "reflecting the surroundings",
+            "being sucked into a blackhole", "slowly disappearing", "on fire", "evolving into #holdable#", "evaporating into thin air", "covered in cheese", "glowing and floating",
+            "glowing and vibrating", "sitting next to #holdable#", "being licked by #critter#", "carried by #humanoid#", "riding on #rideable#", "made out of #material#",
+            "made out of #material#", "made out of #material#", "shaped like #critter#"];
+        case "#fruit#":
+          return ["an apple", "a banana", "a pear", "grapes", "an orange", "a lemon", "a lime", "a watermelon", "a tangerine", "cantaloupe", "blueberries", "raspberries", "cherries"];
+        case "#veggie#":
+          return ["broccoli", "peas", "asparagus", "a potato", "onions", "squash", "cucumbers", "cauliflower", "corn", "carrots", "lima beans", "okra", "avocados"]
+        case "#drinkable#":
+          return ["a bottle of water", "a jug of milk", "a glass of orange juice", "a mug of beer", "a flask of whiskey", "a jug of moonshine", "a cup of coffee", "a cup of tea", "a glass of wine"];
+        case "#plantable#":
+          return ["#fruit#", "#fruit#", "#fruit#", "#fruit#", "#fruit#", "#veggie#", "#veggie#", "#veggie#", "#veggie#", "flowers", "trees", "bushes", "seeds", "a cactus", "lush foliage"];
+        case "#wearable#":
+          return ["a funny #color# hat", "a stylish #color# cape", "fancy #color# pants", "an ornate scarf", "#color# gloves", "a work uniform", "funny glasses", "a bright #color# dress",
+            "#color# shoes", "a crown", "a #wearable-mod# #color# bathrobe", "sunglasses", "a trench coat made out of #material#", "a baseball cap", "a black leather jacket", "blue jeans",
+            "an ugly sweater", "#footwear# and a #wearable-mod# #color# t-shirt", "a tie made out of #material#", "#footwear# and #color# gloves", "#footwear# and a #wearable-mod# tie",
+            "#footwear#", "#footwear#", "#footwear#"];
+        case "#playable#":
+          return ["chess", "tennis", "baseball", "football", "with #holdable#", "chess with #humanoid#", "ping pong with #humanoid#", "a video game", "volleyball", "basketball", "solitaire", "poker",
+            "billiards", "blackjack", "poker with #humanoid#", "basketball with #humanoid#"];
+        case "#wearable-mod#": // Usage: ___ hat.
+          return ["wrinkled", "fancy", "funny", "dirty", "vintage", "worn-out", "brand new", "striped", "shiny"];
+        case "#footwear#":
+          return ["shoes", "boots", "flip flops", "high heels", "combat boots", "sandals", "cowboy boots", "hiking boots", "loafers", "crocs", "tennis shoes", "sneakers"];
+        case "#material#": // Usage: made out of ___; covered in ___;
+          return ["chocolate", "cheese", "solid gold", "crystal", "cardboard", "silk", "denim", "newspaper", "leather", "metal", "paper", "iron", "vegetables", "meat"];
+      }
+    }
+
+  </script>
+
+</body>
+</html>
